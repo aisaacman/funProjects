@@ -1,2 +1,2 @@
-# azureScripts
-Various Scripts for Azure
+# Fun Projects
+Various projects to bolster the portfolio.
