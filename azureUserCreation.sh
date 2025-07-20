@@ -5,7 +5,7 @@
 # Description: This script automates the creation of a new Azure AD user
 #              and assigns them a role based on a predefined template.
 #
-# Usage: ./provision_azure_user.sh -d "Display Name" -u "user.name" -t "role_template"
+# Usage: ./azureUserCreation.sh -d "Display Name" -u "user.name" -t "role_template"
 #
 # Arguments:
 #   -d, --display-name  The display name for the new user (e.g., "John Doe").
