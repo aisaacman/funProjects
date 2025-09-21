@@ -1,5 +1,9 @@
 import xml.etree.ElementTree as ET
 import csv
+import argparse
+import os
+from datetime import datetime
+from jinja2 import Environment, FileSystemLoader
 
 def parse_nessus_report(file_path):
     """
@@ -70,25 +74,39 @@ def filter_and_prioritize(findings, min_severity=['Critical', 'High']):
 
 def generate_report(prioritized_findings, output_file):
     """
-    Generates a CSV report from the prioritized findings.
-    
-    Args:
-        prioritized_findings (list): A list of dictionaries with vulnerability data.
-        output_file (str): The path to the output CSV file.
+    Generates an HTML report from the prioritized findings using Jinja2.
     """
-    # Define CSV headers based on the data you've extracted
-    headers = ['host_ip', 'vulnerability_name', 'risk_factor', 'cvss_base_score', 'description', 'solution', 'port', 'protocol']
+    # Set up Jinja2 environment to load the template
+    template_dir = os.path.dirname(os.path.abspath(__file__))
+    env = Environment(loader=FileSystemLoader(template_dir))
+    template = env.get_template('report_template.html')
     
-    with open(output_file, 'w', newline='', encoding='utf-8') as f:
-        writer = csv.DictWriter(f, fieldnames=headers)
-        writer.writeheader()
-        writer.writerows(prioritized_findings)
+    # Prepare the data for the template
+    data = {
+        'findings': prioritized_findings,
+        'date': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+    
+    # Render the template with the data
+    html_output = template.render(data)
+    
+    with open(output_file, 'w', encoding='utf-8') as f:
+        f.write(html_output)
         
-    print(f"Report generated successfully at: {output_file} 📄")
+    print(f"HTML report generated successfully at: {output_file}")
 
 if __name__ == "__main__":
-    nessus_file = 'your_scan_report.nessus'  # Replace with your file path
-    output_csv = 'prioritized_vulnerabilities.csv'
+    parser = argparse.ArgumentParser(description='Parse Nessus scan results and generate a prioritized report.')
+    parser.add_argument('-i', '--input', type=str, required=True, help='Path to the Nessus .nessus XML file.')
+    parser.add_argument('-o', '--output', type=str, required=True, help='Path for the output HTML report file.')
+    parser.add_argument('-s', '--severity', nargs='+', default=['Critical', 'High'], 
+                        help='Severity levels to prioritize (e.g., Critical High).')
+    
+    args = parser.parse_args()
+    
+    nessus_file = args.input
+    output_html = args.output
+    min_severity = args.severity
     
     # 1. Parse the Nessus report
     all_findings = parse_nessus_report(nessus_file)
