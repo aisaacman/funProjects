@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Nessus Vulnerability Report</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .critical { background-color: #ffcccc; }
+        .high { background-color: #ffe5cc; }
+        /* Add styles for other severities as needed */
+    </style>
+</head>
+<body>
+    <h1>Nessus Vulnerability Report</h1>
+    <p>Generated on: {{ date }}</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Severity</th>
+                <th>Host IP</th>
+                <th>Vulnerability Name</th>
+                <th>Description</th>
+                <th>Solution</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for finding in findings %}
+            <tr class="{{ finding.risk_factor | lower }}">
+                <td>{{ finding.risk_factor }}</td>
+                <td>{{ finding.host_ip }}</td>
+                <td>{{ finding.vulnerability_name }}</td>
+                <td>{{ finding.description }}</td>
+                <td>{{ finding.solution }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
